@@ -12,19 +12,24 @@ co2_contributors <- co2_data %>%
 
 build_map <- function(mapvar, yearvar) {
   data <- co2_contributors %>%
-    filter(year %in% yearvar) %>%
-    select(country, iso_code, mapvar)
+    filter(year %in% yearvar)
   
   g <- list(showland = TRUE,
             landcolor = toRGB("#e5ecf6"))
   
+  varequation <- paste0("~", mapvar)
+  
   p <- plot_geo(data, locationmode = 'ISO-3') %>%
     add_trace(
-      z = data[,mapvar], locations = ~iso_code,
+      type = "choropleth",
+      z = data[,mapvar], text = ~country, locations = ~iso_code,
       color = data[,mapvar], colors = 'Purples'
     ) %>%
     colorbar(title = "Color Title") %>%
-    layout(title = str_to_title(mapvar),
-          geo = g)
+    layout(
+      title = paste0("Production-based emissions of carbon dioxide (CO₂) from ", sub("_.*", "", mapvar)),
+      geo = g
+    )
     return(p)
 }
+
